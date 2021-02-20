@@ -19,18 +19,27 @@ This should load the data, perform preprocessing, and save the output to the dat
 """
 
 def remove_percents(df, col):
+    for col in pct_DV:
+        df[col] = df[col].replace("%", "", regex=True)
     return df
 
 def fill_zero_iron(df):
+    df['Iron (% DV)'].fillna(0, inplace=True)
     return df
     
 def fix_caffeine(df):
+    df.dropna(inplace=True)
+    df['Caffeine (mg)'].replace('\D+', '0', regex=True, inplace=True) 
     return df
 
 def standardize_names(df):
+    df.columns = map(str.lower, df.columns)
+    df.columns = df.columns.str.replace(r'\(.*\)', "", regex=True)
     return df
 
 def fix_strings(df, col):
+    df.columns = map(str.lower, df.columns)
+    df.columns = [col.replace('_', '') for col in df.columns]
     return df
 
 
@@ -58,6 +67,7 @@ def main():
     # complete the fix_strings function to convert these strings to lowercase and remove non-alphabet characters
     names = ['Beverage_category', 'Beverage']
     for col in names:
+        col.lowercase()
         df = fix_strings(df, col)
     
     # the column names in this data are clear but inconsistent
@@ -66,7 +76,7 @@ def main():
     
     # now that the data is all clean, save your output to the `data` folder as 'starbucks_clean.csv'
     # you will use this file in checkpoint 2
-    
+    df.to_csv('../data/starbucks_clean.csv', index=False)
     
 
 if __name__ == "__main__":
